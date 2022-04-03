@@ -1,37 +1,40 @@
 package org.me.gcu.Peretti_Chiara_S1831819;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.TextView;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.LinkedList;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity implements OnClickListener
 {
-    private TextView rawDataDisplay;
     private Button startButton;
     private String result = "";
-    private String url1="";
+    private CalendarView calendarView;
+    private TextView textView;
     List<Roadworks> roadworksList;
+    List<Roadworks> filteredRoadworksList;
+    Extractdata extractdata = new Extractdata();
 
     private RecyclerView recyclerView;
         // Traffic Scotland Planned Roadworks XML link
@@ -44,12 +47,49 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
         setContentView(R.layout.activity_main);
         Log.e("MyTag","in onCreate");
         // Set up the raw links to the graphical components
-        rawDataDisplay = (TextView)findViewById(R.id.rawDataDisplay);
         startButton = (Button)findViewById(R.id.startButton);
+        textView = (TextView)findViewById(R.id.salutation);
         recyclerView = findViewById(R.id.recyclerView);
         startButton.setOnClickListener(this);
+        calendarView = findViewById(R.id.calendarView);
+        calendarView.setVisibility(View.INVISIBLE);
+
         Log.e("MyTag","after startButton");
-        // More Code goes here
+
+    }
+
+    private void setDateFilter() {
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView calendarView, int i, int i1, int i2) {
+                i1 ++;
+                String date = i2 + "-" + i1 + "-" + i;
+                LocalDate targetDate;
+                System.out.println(date);
+                targetDate = extractdata.convertCalendarToDate(date);
+
+                List<Roadworks> firstFilteredRoadworksList = roadworksList.stream().filter(d -> d.getStartDate().isBefore(targetDate) || d.getStartDate().isEqual(targetDate)).collect(Collectors.toList());
+                filteredRoadworksList = firstFilteredRoadworksList.stream().filter(d -> d.getEndDate().isAfter(targetDate) || d.getEndDate().isEqual(targetDate)).collect(Collectors.toList());
+                System.out.println(firstFilteredRoadworksList.size());
+                System.out.println(filteredRoadworksList.size());
+
+                if (filteredRoadworksList.size() > 0){
+                    filterView(filteredRoadworksList);
+                    System.out.println("filtering data");
+                    textView.setText(filteredRoadworksList.size() + " roadworks are happening on this date.");
+                } else {
+                    Roadworks roadworks = new Roadworks();
+                    roadworks.setTitle("No roadworks scheduled for this date.");
+                    textView.setText("No roadworks are happening on this date.");
+                    filteredRoadworksList.add(roadworks);
+                    System.out.println("No roadworks for these dates");
+                    filterView(filteredRoadworksList);
+
+                }
+
+            }
+        });
     }
 
     public void startProgress()
@@ -65,7 +105,17 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
+
+
     }
+
+    private void filterView(List<Roadworks> data){
+        recyclerAdapter adapter = new recyclerAdapter(this, data);
+        adapter.notifyDataSetChanged();
+        recyclerView.setAdapter(adapter);
+
+    }
+
 
 
 
@@ -77,86 +127,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
         Log.e("MyTag","after startProgress");
     }
 
-    private LinkedList<Roadworks> parse(String datatoParse)
-    {
-        Roadworks roadworks = null;
-        LinkedList<Roadworks> roadworksList = null;
 
-
-        try {
-            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            XmlPullParser parser = factory.newPullParser();
-
-            parser.setInput(new StringReader(datatoParse));
-
-            int eventType = parser.getEventType();
-            while(eventType != XmlPullParser.END_DOCUMENT) {
-
-
-                if(eventType == XmlPullParser.START_TAG) {
-
-                    if (parser.getName().equalsIgnoreCase("channel")) {
-
-                        roadworksList = new LinkedList<Roadworks>();
-                        System.out.println(parser.getName());
-                    }
-                    else if (parser.getName().equalsIgnoreCase("item")) {
-                        // add Roadwork object to list
-                        roadworks = new Roadworks();
-                        System.out.println(parser.getName());
-
-
-                    } else if (roadworks != null && parser.getName().equalsIgnoreCase("title")){
-                        System.out.println(parser.getName());
-
-                        String text = parser.nextText();
-                        System.out.println(text);
-                        roadworks.setTitle(text);
-                    } else if (roadworks != null && parser.getName().equalsIgnoreCase("description")) {
-                        System.out.println(parser.getName());
-
-                        String text = parser.nextText();
-                        System.out.println(text);
-                        roadworks.setDescription(text);
-                    } else if (roadworks != null && parser.getName().equalsIgnoreCase("link")) {
-
-                        System.out.println(parser.getName());
-
-                    }else if (parser.getName().equalsIgnoreCase("georss:point")) {
-                        System.out.println(parser.getName());
-
-                        String text = parser.nextText();
-                        System.out.println(text);
-                        roadworks.setGeorss(text);
-                    }
-
-
-
-
-                }
-
-                else if (eventType == XmlPullParser.END_TAG)
-                {
-                    if (parser.getName().equalsIgnoreCase("item")){
-                        Log.e("MyTag","item is" + roadworks.toString());
-                        roadworksList.add(roadworks);
-                    }
-                    else if(parser.getName().equalsIgnoreCase("channel")){
-                        int size;
-                        size = roadworksList.size();
-                        Log.e("My tag", "size of channel is " + size);
-                    }
-                }
-
-                eventType = parser.next();
-            }
-
-        } catch (XmlPullParserException e) {e.printStackTrace();}
-        catch (IOException e) {e.printStackTrace();}
-
-        return roadworksList;
-    }
 
     // Need separate thread to access the internet resource over network
     // Other neater solutions should be adopted in later iterations.
@@ -195,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
                 while ((inputLine = in.readLine()) != null)
                 {
                     result = result + inputLine;
-                    Log.e("MyTag",inputLine);
+                    //Log.e("MyTag",inputLine);
 
                 }
                 in.close();
@@ -231,13 +202,15 @@ public class MainActivity extends AppCompatActivity implements OnClickListener
 
             MainActivity.this.runOnUiThread(new Runnable()
             {
+                @RequiresApi(api = Build.VERSION_CODES.O)
                 public void run() {
                     Log.d("UI thread", "I am the UI thread");
                     XMLPullParserHandler parser = new XMLPullParserHandler();
 
-                    roadworksList = parse(result);
-//                    rawDataDisplay.setText(roadworksList.toString());
-//                    setAdapter(roadworksList);
+                    roadworksList = parser.parse(result);
+                    setAdapter(roadworksList);
+                    calendarView.setVisibility(View.VISIBLE);
+                    setDateFilter();
 
 
                 }

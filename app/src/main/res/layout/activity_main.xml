@@ -9,27 +9,22 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:text="Welcome to Mobile Platform Development Assignment 2021-2022"/>
+
         <Button
             android:id="@+id/startButton"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Press to get data"/>
-        <TextView
-            android:id="@+id/acknowledgement"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:text="Contains Traffic Scotland Data"/>
-        <TextView
-            android:id="@+id/rawDataDisplay"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:text="Raw Data is Displayed here"/>
+            android:text="Press to get data for roadworks."/>
+
+        <CalendarView
+            android:id="@+id/calendarView"
+            android:layout_width="match_parent"
+            android:layout_height="322dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="557dp" />
+
     </LinearLayout>
 </ScrollView>
