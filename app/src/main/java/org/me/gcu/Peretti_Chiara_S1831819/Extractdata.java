@@ -1,12 +1,20 @@
 package org.me.gcu.Peretti_Chiara_S1831819;
 
+import static java.lang.Float.parseFloat;
+
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class Extractdata {
 
@@ -26,6 +34,20 @@ public class Extractdata {
 
             return text; // Text is the first word itself.
         }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public String[] getDropdownList(List<Roadworks> roadworksList) {
+
+        List<String> list = new ArrayList<>();
+        list.add("All");
+        for(int i = 0; i < roadworksList.size(); i ++){
+            list.add(getRoadFromTitle(roadworksList.get(i).getTitle()));
+        }
+        list = list.stream().distinct().collect(Collectors.toList());
+        String[] result = list.toArray(new String[0]);
+
+        return result;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -59,6 +81,15 @@ public class Extractdata {
         LocalDate calendarDate = LocalDate.parse(date, formatter);
         return calendarDate;
     }
+
+    public LatLng getLatLng(String text){
+        String[] latLong = text.split(" ");
+        double lat = parseFloat(latLong[0]);
+        double lon = parseFloat(latLong[1]);
+        LatLng location = new LatLng(lat, lon);
+        return location;
+    }
+
 
     public String removeLineBreak(String text){
 

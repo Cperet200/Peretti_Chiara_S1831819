@@ -58,15 +58,21 @@ public class XMLPullParserHandler {
                     } else if (roadworks != null && parser.getName().equalsIgnoreCase("title")){
                         String text = parser.nextText();
                         roadworks.setTitle(text);
+                        roadworks.setRoad(extractdata.getRoadFromTitle(text));
                     }
                     else if (roadworks != null && parser.getName().equalsIgnoreCase("description")) {
                         String text = parser.nextText();
                         roadworks.setDescription(text);
+                        if(text.contains("Start Date:")){
+                            LocalDate sDate = extractdata.getStartDate(text);
+                            LocalDate eDate = extractdata.getEndDate(text);
+                            roadworks.setStartDate(sDate);
+                            roadworks.setEndDate(eDate);
+                        }
 
-                        LocalDate sDate = extractdata.getStartDate(text);
-                        LocalDate eDate = extractdata.getEndDate(text);
-                        roadworks.setStartDate(sDate);
-                        roadworks.setEndDate(eDate);
+
+
+
                     } else if (parser.getName().equalsIgnoreCase("point")) {
                         String text = parser.nextText();
                         roadworks.setGeorss(text);
@@ -80,7 +86,7 @@ public class XMLPullParserHandler {
                 else if (eventType == XmlPullParser.END_TAG)
                 {
                     if (parser.getName().equalsIgnoreCase("item")){
-                        Log.e("MyTag","item is" + roadworks.toString());
+                        //Log.e("MyTag","item is" + roadworks.toString());
                         roadworksList.add(roadworks);
                     }
                     else if(parser.getName().equalsIgnoreCase("channel")){

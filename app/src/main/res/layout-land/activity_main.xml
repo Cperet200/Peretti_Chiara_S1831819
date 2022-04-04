@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="fill_parent" android:layout_height="fill_parent">
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"  android:layout_width="fill_parent" android:layout_height="fill_parent">
     <LinearLayout
         android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
 
@@ -7,7 +7,7 @@
             android:id="@+id/salutation"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Chiara Peretti S1831819 Traffic Scotland Viewer"
+            android:text="Chiara Peretti S1831819 Traffic Scotland Viewer in landscape view"
             android:textSize="20sp" />
 
         <Button
@@ -16,25 +16,25 @@
             android:layout_height="wrap_content"
             android:text="Press to get data for planned roadworks." />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
         <Spinner
             android:id="@+id/spinner2"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <CalendarView
             android:id="@+id/calendarView"
-            android:layout_width="match_parent"
-            android:layout_height="322dp" />
-
-        <Spinner
-            android:id="@+id/spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="557dp" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 </ScrollView>

@@ -9,6 +9,16 @@ public class Roadworks {
     private String georss;
     private LocalDate startDate;
 
+    public String getRoad() {
+        return road;
+    }
+
+    public void setRoad(String road) {
+        this.road = road;
+    }
+
+    private String road;
+
     public LocalDate getStartDate() {
         return startDate;
     }
