@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.e("MyTag", "in onCreate");
-        // Set up the raw links to the graphical components
+        
         startButton = (Button) findViewById(R.id.startButton);
         textView = (TextView) findViewById(R.id.salutation);
         recyclerView = findViewById(R.id.recyclerView);
